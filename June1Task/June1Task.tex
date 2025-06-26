@@ -141,26 +141,28 @@ With an accuracy of $96.8\%$, it is likely that the training data might have inc
 
 \newpage
 \section{Limited data model vs full data model}
-There have been made 2 models, one with only 3 input features, and the other with all features.
-They were then statistically analized, and compared against eachother.
+We speculated how a model with only a subset of features would perform compared to a full model with all features as inputs.
 
 \subsection{Method}
-The dataset provided is a subset of the EmoPairCompute dataset.
-This dataset was processed by one-hot encoding the catecorical data.
-The data was then divided into 10 chunks or folds and each fold was then further divided into 5 inner...
-Using kfold cross-validation ensures less bias in the data used for training and testing a model.
-For each outer fold, each permutation of [1, 2, 4, 8, 16, 32] of amount of neurons in the hidden layer was tested.
-The model's loss function is defined by \[(insert fnction here)\]
-The best model with lowest loss for each outer fold is chosen as the final model for the outer fold.
-By going through each permutation, the best amount of neurons will be choosen for each outer fold.
-This model permutation was done twice, where the first model only had the input features of "Puzzler", "Phase\_phase1", "Phase\_phase2", and "Phase\_phase3", and the second model had all features in the dataset provided to it.
+We built 2 artificial neural networks to predict frustration:
+\begin{itemize}
+  \item Limited model: This model would only take 4 features as inputs. (\texttt{Puzzler}, \texttt{Phase\_phase1}, \texttt{Phase\_phase2}, \texttt{Phase\_phase3})
+  \item Full model: The full model will take all features as inputs.
+\end{itemize}
 
-Now with 2 lists of fold scores, based on mean square error, where lower is better, the 2 models can be statistically compared.
-2 boxplots will be made to briefly visualize the means and distribution of both the models kfold scores.
-The parametric paired t-test and the non parametric wilcoxon test, will be used to test for statistal significance of wether one or the other model is better.
+The dataset provided is a subset from the EmoPairCompute dataset.
+This dataset provides various sensor data about the paticipants, and some categorical data about the state of the game during data collection.
+These categorical data will be one-hot-encoded.
+
+Nested cross-validation was utilized for generalization error estimation.
+10 outer folds were used with 5 inner folds, where the inner folds choose the amount of neurons in the hidden layer for the outer fold.
+The canidates were \{1, 2, 4, 8, 16, 32\} neurons.
+
+For each of the outer folds we took the best performing inner loop-MSE, which resulted in 10 paired MSE values for each model.
+We compared these with a paired t-test and a Wilcoxon test.
 
 \subsection{Results}
-The scores producted from the kfolds is table \ref{tab:features} and table \ref{tab:hidden}.
+Tables \ref{tab:features} and \ref{tab:hidden} list the k-fold MSE scores, and the selected hidden-unit counts for the limited- and full- models, respectively.
 
 \begin{table}[ht]
 \centering
@@ -209,11 +211,8 @@ The scores producted from the kfolds is table \ref{tab:features} and table \ref{
 \end{minipage}
 \end{table}
 
-The mean for the limited model and the full model are $0.716$ and $0.667$, respectively.
-For the standard deviation, it is $0.199$ for the limited model and $0.158$ for the full model.
-It shows that the limited model has slightly more error than the full model. 
-Nevertheless, a t-test and/or a wilcoxon has to be done to find if this difference has any statistical significance.
-In this case both a parametric paired t-test and a non-parametric wilcoxon test was performed.
+The limited model had a mean MSE of 0.716 (STD = 0.199), while the full-feature model had a mean MSE of 0.667 (STD = 0.158).
+To determine whether this difference is statistically significant, we performed both a paired t-test and a 2 sided Wilcoxon test. ($\alpha=5\%$)
 
 The result of the pared t-test is a p-value of "0.3339".
 At a default significance of $5\%$, the null null-hypothisis cannot be rejected and no significance was found.
